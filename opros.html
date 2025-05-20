@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Опрос</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #e6ecec;
+            color: #333;
+            line-height: 1.5;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Центрирование по вертикали */
+            align-items: center; /* Центрирование по горизонтали */
+            min-height: 100vh;
+        }
+
+        /* Анимация приветствия */
+        .welcome-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #e6ecec;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .welcome-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .welcome-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #28a745;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Опросник */
+        .survey-container {
+            max-width: 500px;
+            width: 90%;
+            padding: 25px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .survey-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .question {
+            margin-bottom: 25px;
+            display: none;
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .question-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 14px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            font-size: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option:hover {
+            background: #e0e0e0;
+        }
+
+        .option.selected {
+            background: linear-gradient(45deg, #28a745, #87ec9e);
+            color: white;
+            border-color: #28a745;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: linear-gradient(45deg, #28a745, #87ec9e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: linear-gradient(45deg, #218838, #2cb34a);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn:disabled {
+            background: #cccccc;
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* Адаптация для маленьких экранов */
+        @media (max-width: 480px) {
+            .welcome-text {
+                font-size: 24px;
+            }
+            
+            .survey-container {
+                padding: 20px;
+                margin: 0; /* Убираем margin для точного центрирования */
+                width: 90%; /* Сохраняем ширину */
+            }
+            
+            .question-title {
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+            
+            .option {
+                padding: 12px;
+                font-size: 15px;
+            }
+            
+            .btn {
+                padding: 12px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Приветственная анимация -->
+    <div class="welcome-container">
+        <div class="welcome-text">Добро пожаловать!</div>
+    </div>
+
+    <!-- Опросник -->
+    <div class="survey-container">
+        <br>
+        <!-- Вопрос 1 -->
+        <div class="question active" id="question1">
+            <h2 class="question-title">Сколько вам лет?</h2>
+            <div class="options">
+                <div class="option" data-value="under18">Меньше 18</div>
+                <div class="option" data-value="18-45">18-45</div>
+                <div class="option" data-value="over45">Больше 45</div>
+            </div>
+            <button class="btn" id="nextBtn1" disabled>Продолжить</button>
+        </div>
+
+        <!-- Вопрос 2 -->
+        <div class="question" id="question2">
+            <h2 class="question-title">Пользовались ли вы ИИ?</h2>
+            <div class="options">
+                <div class="option" data-value="yes">Да</div>
+                <div class="option" data-value="no">Нет</div>
+                <div class="option" data-value="dontknow">Не знаю</div>
+            </div>
+            <button class="btn" id="nextBtn2" disabled onclick="window.location.href='chat.html'">Поехали!</button>
+        </div>
+    </div>
+
+    <script>
+        // Приветственная анимация на 3 секунды
+        setTimeout(() => {
+            document.querySelector('.welcome-container').classList.add('hidden');
+            document.querySelector('.survey-container').classList.add('visible');
+        }, 1500);
+
+        // Обработка выбора вариантов ответа
+        const options = document.querySelectorAll('.option');
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                // Удаляем выделение у всех вариантов в текущем вопросе
+                const question = this.closest('.question');
+                question.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Выделяем выбранный вариант
+                this.classList.add('selected');
+                
+                // Активируем кнопку продолжения
+                const nextBtn = question.querySelector('.btn');
+                nextBtn.disabled = false;
+            });
+        });
+
+        // Переход между вопросами
+        document.getElementById('nextBtn1').addEventListener('click', function() {
+            document.getElementById('question1').classList.remove('active');
+            document.getElementById('question2').classList.add('active');
+        });
+
+        // Улучшение отзывчивости на touch-устройства
+        document.addEventListener('touchstart', function() {}, {passive: true});
+    </script>
+</body>
+</html>
